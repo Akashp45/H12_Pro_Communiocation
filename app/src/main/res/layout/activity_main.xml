@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="16dp">
+
+<!--    <TextView-->
+<!--        android:id="@+id/heartbeatText"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:text="Waiting for heartbeat..."-->
+<!--        android:textSize="18sp"-->
+<!--        android:textStyle="bold"/>-->
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:fillViewport="true">
+
+        <TextView
+        android:id="@+id/logTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="14sp"
+        android:padding="4dp"
+        android:scrollbars="vertical"
+        android:background="#EEEEEE"
+        android:lineSpacingExtra="2dp"
+        android:textIsSelectable="true"/>
+    </ScrollView>
+
+    <Button
+        android:id="@+id/btn_arm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Arm"
+        android:textColor="@color/black"
+        android:background="@color/white"
+        android:layout_margin="15dp"/>
+
+</LinearLayout>
