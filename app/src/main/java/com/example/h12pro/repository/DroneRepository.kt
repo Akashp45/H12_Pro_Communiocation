@@ -1,11 +1,13 @@
 package com.example.h12pro.repository
 
 import MavlinkConnectionManager
+import com.divpundir.mavlink.api.MavEnumValue
 import com.divpundir.mavlink.definitions.common.CommandLong
 import com.divpundir.mavlink.definitions.common.MavCmd
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
+import java.lang.Exception
 
 class DroneRepository(private val connection: MavlinkConnectionManager) {
     suspend fun observeHeartbeat(): Flow<String> {
@@ -20,27 +22,51 @@ class DroneRepository(private val connection: MavlinkConnectionManager) {
 //                    is SysStatus -> "Battery: ${msg.batteryRemaining}%\n\n\n"
 //                    else -> null
 //                }
-
-                "msg-> $msg\n\n\n"
+                if (msg.toString().contains("MavOdiArm", ignoreCase = true)) {
+                    "MavOdiArm Status: $msg\n\n\n"
+                } else {
+                    "msg-> $msg\n\n\n"
+                }
             }
     }
 
+    suspend fun armDrone(): Boolean{
+        return try {
+            val armCmd = CommandLong(
+                targetSystem = 1u,
+                targetComponent = 1u,
+                command = MavEnumValue.of(MavCmd.COMPONENT_ARM_DISARM),
+                confirmation = 0u,
+                param1 = 1f,
+                param2 = 0f,
+                param3 = 0f,
+                param4 = 0f,
+                param5 = 0.0f,
+                param6 = 0.0f,
+                param7 = 0f
+            )
+            connection.connection.sendUnsignedV2(
+                systemId = 255u,
+                componentId = 0u,
+                armCmd
+            )
+            return true
+        }catch (e: Exception){
+            false
+        }
+    }
 
-//    suspend fun sendArmCommand(arm: Boolean) {
-//        val command = CommandLong.builder()
-//            .targetSystem(1u) // system ID (uint8)
-//            .targetComponent(1u) // usually autopilot component = 1
-//            .command(MavEnumValue.of(MavCmd.MAV_CMD_COMPONENT_ARM_DISARM))
-//            .confirmation(0u)
-//            .param1(if (arm) 1f else 0f) // 1 = arm, 0 = disarm
-//            .param2(0f)
-//            .param3(0f)
-//            .param4(0f)
-//            .param5(0f)
-//            .param6(0f)
-//            .param7(0f)
-//            .build()
-//
-//        connection.send(command)
-//    }
+    suspend fun observeMavOdiArmStatus(): Flow<String> {
+        return connection.listen()
+            .map { it.message }
+            .mapNotNull { msg ->
+                // Filter for MavOdiArm status messages
+                if (msg.toString().contains("MavOdiArm", ignoreCase = true)) {
+                    "MavOdiArm Status: $msg\n\n\n"
+                } else {
+                    null
+                }
+            }
+    }
+
 }

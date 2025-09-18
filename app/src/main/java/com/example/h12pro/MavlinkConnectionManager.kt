@@ -29,8 +29,4 @@ class MavlinkConnectionManager (private val udpPort: Int = 14550) {
 
         return connection.mavFrame
     }
-
-
-
-
 }
